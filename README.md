@@ -1,12 +1,43 @@
-# journey_map
-Python required. 
+Journey Map Tracker
 
-You need https://github.com/vsantiago113/ReadWriteMemory/tree/master. 
-You also need the full sized OOB maps from qtzl3000 on the wiki, the out of bounds sections (4096x2048). 
+This is a simple Python script for tracking the positions of two characters in the game "Journey." It utilizes the tkinter library for the GUI, the Pillow (PIL) library for image manipulation, and the ReadWriteMemory library for reading and writing memory values.
+Features
 
-Rename them level_00.webp to level_07.webp and place them on the same level of this script. 
+    Displays the game world as an image.
+    Tracks the positions of two characters: "Wayfarer" and "Nick."
+    Updates the character positions in real-time as you play the game.
+    Automatically adjusts the image to match the current game level.
+    The characters are represented as dots on the map.
 
-Journey needs to be running before you start the script.
+Requirements
 
-This is a first draft. Maybe Tower needs some work still. 
+    Python 3.x
+    tkinter (usually included with Python)
+    Pillow (PIL) library
+    ReadWriteMemory library
 
+Installation
+
+    Make sure you have Python installed. You can download it from Python's official website.
+
+    Install the required libraries:
+
+    pip install pillow
+    pip install pywin32
+    pip install ReadWriteMemory
+
+    Note: You may need to install additional dependencies, such as the Microsoft Visual C++ Redistributable if you encounter issues with the ReadWriteMemory library.
+
+Usage
+
+    Run the "Journey" game.
+
+    Open the script in a text editor or Python IDE.
+
+    Run the script.
+
+    The GUI window will open, displaying the game world image.
+
+    The positions of "Wayfarer" and "Nick" will be displayed as dots on the map, updating in real-time as you play the game.
+
+    The script will automatically adjust the image to match the current game level.
