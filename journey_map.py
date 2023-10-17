@@ -1,7 +1,5 @@
 import tkinter as tk
 from PIL import Image, ImageTk, ImageDraw
-import time
-import json
 from ReadWriteMemory import ReadWriteMemory
 from struct import unpack
 
