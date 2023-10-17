@@ -1,6 +1,6 @@
 # Journey Map Tracker
 
-This is a simple Python script for tracking the positions of two characters in the game "Journey." It utilizes the tkinter library for the GUI, the Pillow (PIL) library for image manipulation, and the ReadWriteMemory library for reading and writing memory values.
+This is a simple Python script for tracking the positions of two characters in the game "Journey." It utilizes the tkinter library for the GUI, the Pillow (PIL) library for image manipulation, and the ReadWriteMemory library for reading memory values.
 
 ## Features
 
