@@ -1,4 +1,5 @@
 # journey_minimap
+Python required. 
 
 You need https://github.com/vsantiago113/ReadWriteMemory/tree/master/ReadWriteMemory. 
 You also need the OOB maps from qtzl3000 on the wiki, the out of bounds sections. 
