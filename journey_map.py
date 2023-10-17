@@ -65,14 +65,14 @@ def draw_dots():
         img_label.image = image_resized
 
 def resize_canvas(event):
-    global image_pil, window_size
+    global window_size
 
-    if image_pil:
-        width = event.width
-        height = event.height
+    width = event.width
+    height = event.height
 
-        if (width, height) != window_size:
-            window_size = (width, height)
+    if (width, height) != window_size:
+        window_size = (width, height)
+
 
 def update():
     global current_level_id, level_id_pointer
@@ -84,6 +84,7 @@ def update():
 
     draw_dots()
     root.after(1000, update)
+
 
 
 rwm = ReadWriteMemory()
@@ -112,7 +113,7 @@ img_label.pack(fill=tk.BOTH, expand=True)
 current_level_id = -1
 image = None
 
-#root.bind("<Configure>", resize_canvas)
+root.bind("<Configure>", resize_canvas)
 
 update()
 
