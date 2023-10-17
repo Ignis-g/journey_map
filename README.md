@@ -2,7 +2,7 @@
 Python required. 
 
 You need https://github.com/vsantiago113/ReadWriteMemory/tree/master/ReadWriteMemory. 
-You also need the OOB maps from qtzl3000 on the wiki, the out of bounds sections. 
+You also need the full sized OOB maps from qtzl3000 on the wiki, the out of bounds sections (4096x2048). 
 
 Rename them level_0X.webp and place them on the same level of this script. 
 
