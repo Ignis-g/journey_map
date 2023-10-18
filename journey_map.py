@@ -124,7 +124,7 @@ class JourneyApp:
             self.load_image(self.current_level_id)
 
         self.draw_dots()
-        self.root.after(1000, self.update)
+        self.root.after(500, self.update)
 
     def run(self):
         self.root.mainloop()
