@@ -41,6 +41,7 @@ pip install pillow
 ## Download
 
 Download the release binary file and make sure you have the maps! 
+
 ![image](https://github.com/Ignis-g/journey_map_tracker/assets/105871593/d26b67b2-7e2f-47de-ac36-a1ec78be3b20)
 
 
