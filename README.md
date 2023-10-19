@@ -1,11 +1,11 @@
 # Journey Map Tracker
 
-This is a simple Python script for tracking the positions of two characters in the game "Journey." It utilizes the tkinter library for the GUI, the Pillow (PIL) library for image manipulation, and the ReadWriteMemory library for reading memory values.
+This is a simple Python script for tracking the positions of the two characters in the game "Journey." It utilizes the tkinter library for the GUI, the Pillow (PIL) library for image manipulation, and the ReadWriteMemory library for reading memory values.
 
 ## Features
 
 - Displays the game world as an image.
-- Tracks the positions of two characters: "Wayfarer" and "Nick."
+- Tracks the positions of two characters: "Wayfarer" and "Nick" (your companion).
 - Updates the character positions in real-time as you play the game.
 - Automatically adjusts the image to match the current game level.
 - The characters are represented as dots on the map.
@@ -36,7 +36,7 @@ pip install pillow
 
 3. **The GUI window will open, displaying the game world image.**
 
-4. **The positions of "Wayfarer" and "Nick" will be displayed as dots on the map, updating in real-time as you play the game.**
+4. **The positions of the Wayfarer and Nick will be displayed as dots on the map, updating in real-time as you play the game.**
 
 5. **The script will automatically adjust the image to match the current game level.**
 
