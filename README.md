@@ -36,7 +36,12 @@ pip install pillow
 
 3. **The GUI window will open, displaying the game world image.**
 
-4. **The positions of the Wayfarer and Nick will be displayed as dots on the map, updating in real-time as you play the game.**
+4. **The script will automatically adjust the image to match the current game level.**
 
-5. **The script will automatically adjust the image to match the current game level.**
+## Download
+
+Download the release binary file and make sure you have the maps! 
+![image](https://github.com/Ignis-g/journey_map_tracker/assets/105871593/d26b67b2-7e2f-47de-ac36-a1ec78be3b20)
+
+
 
