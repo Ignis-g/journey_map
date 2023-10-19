@@ -7,15 +7,15 @@ from struct import unpack
 WAYFARER_COLOR = 'yellow'
 NICK_COLOR = 'red'
 
-LEVEL_ADDS = {
-    0: {'z': 410, 'x': 1840, 'x_step': 3.2, 'z_step': 3.2},
-    1: {'z': 410, 'x': 1840, 'x_step': 3.2, 'z_step': 3.2},
-    2: {'z': 410, 'x': 1840, 'x_step': 3.2, 'z_step': 3.2},
-    3: {'z': 520, 'x': 1785, 'x_step': 3.0, 'z_step': 2.985},
-    4: {'z': 255, 'x': 1845, 'x_step': 3.21, 'z_step': 3.2},
-    5: {'z': 405, 'x': 1850, 'x_step': 3.2, 'z_step': 3.2},
-    6: {'z': 410, 'x': 1840, 'x_step': 3.2, 'z_step': 3.2},
-    7: {'z': 780, 'x': 1660, 'x_step': 2.45, 'z_step': 2.48},
+LEVELS = {
+    0: {'name': '01_Chapter_Select_CS_map.webp', 'z': 410, 'x': 1840, 'x_step': 3.2, 'z_step': 3.2},
+    1: {'name': '02_Broken_Bridge_BB_map.webp', 'z': 410, 'x': 1840, 'x_step': 3.2, 'z_step': 3.2},
+    2: {'name': '03_Pink_Desert_PD_map.webp', 'z': 410, 'x': 1840, 'x_step': 3.2, 'z_step': 3.2},
+    3: {'name': '04_Sunken_City_SC_map.webp', 'z': 520, 'x': 1785, 'x_step': 3.0, 'z_step': 2.985},
+    4: {'name': '05_Underground_UG_map.webp', 'z': 255, 'x': 1845, 'x_step': 3.21, 'z_step': 3.2},
+    5: {'name': '06_Tower_map.webp', 'z': 405, 'x': 1850, 'x_step': 3.2, 'z_step': 3.2},
+    6: {'name': '07_Snow_map.webp', 'z': 410, 'x': 1840, 'x_step': 3.2, 'z_step': 3.2},
+    7: {'name': '08_Paradise_map.webp', 'z': 780, 'x': 1660, 'x_step': 2.45, 'z_step': 2.48},
 }
 
 class JourneyApp:
@@ -54,7 +54,7 @@ class JourneyApp:
 
     def load_image(self, level_id):
         try:
-            image = Image.open(f"level_0{level_id}.webp")
+            image = Image.open(LEVELS.get(self.current_level_id, {}).get('name', 'Unknown_map.webp'))
             image_resized = ImageTk.PhotoImage(image.resize((self.window_size[0], self.window_size[1]), Image.LANCZOS))
             self.img_label.config(image=image_resized)
             self.img_label.image = image_resized
@@ -89,10 +89,10 @@ class JourneyApp:
 
             pen_size = 8
             
-            z_add = LEVEL_ADDS.get(self.current_level_id, {}).get('z', 0)
-            x_add = LEVEL_ADDS.get(self.current_level_id, {}).get('x', 0)
-            z_step = LEVEL_ADDS.get(self.current_level_id, {}).get('z_step', 1.0)
-            x_step = LEVEL_ADDS.get(self.current_level_id, {}).get('x_step', 1.0)
+            z_add = LEVELS.get(self.current_level_id, {}).get('z', 0)
+            x_add = LEVELS.get(self.current_level_id, {}).get('x', 0)
+            z_step = LEVELS.get(self.current_level_id, {}).get('z_step', 1.0)
+            x_step = LEVELS.get(self.current_level_id, {}).get('x_step', 1.0)
 
             wayfarer_color = WAYFARER_COLOR
             wayfarer_x, wayfarer_z = coordinates[0]
