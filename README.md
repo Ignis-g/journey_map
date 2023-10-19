@@ -16,7 +16,7 @@ This is a simple Python script for tracking the positions of two characters in t
 - tkinter (usually included with Python)
 - Pillow (PIL) library
 - ReadWriteMemory library https://github.com/vsantiago113/ReadWriteMemory
-- The image files are not included, you need to download the maps from qtzl3000 on the wiki. Full sized! (4096x2048)
+- The image files are not included, you need to download the maps from qtzl3000 on the wiki. Full sized! (4096x2048) https://journey.fandom.com/wiki/Category:Maps
 
 ## Installation
 
