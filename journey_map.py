@@ -9,14 +9,14 @@ NICK_COLOR = 'red'
 PEN_SIZE = 8
 
 LEVELS = {
-    0: {'image_name': '01_Chapter_Select_CS_map.webp', 'x': 1840, 'z': 410, 'x_step': 3.2,  'z_step': 3.2},
-    1: {'image_name': '02_Broken_Bridge_BB_map.webp',  'x': 1840, 'z': 410, 'x_step': 3.2,  'z_step': 3.2},
-    2: {'image_name': '03_Pink_Desert_PD_map.webp',    'x': 1840, 'z': 410, 'x_step': 3.2,  'z_step': 3.2},
-    3: {'image_name': '04_Sunken_City_SC_map.webp',    'x': 1785, 'z': 520, 'x_step': 3.0,  'z_step': 2.985},
-    4: {'image_name': '05_Underground_UG_map.webp',    'x': 1845, 'z': 255, 'x_step': 3.21, 'z_step': 3.2},
-    5: {'image_name': '06_Tower_map.webp',             'x': 1840, 'z': 410, 'x_step': 3.2,  'z_step': 3.2, 'y_minimap': 1150, 'z_minimap': -1320, 'y_step_minimap': 3.21},
-    6: {'image_name': '07_Snow_map.webp',              'x': 1840, 'z': 410, 'x_step': 3.2,  'z_step': 3.2},
-    7: {'image_name': '08_Paradise_map.webp',          'x': 1660, 'z': 780, 'x_step': 2.45, 'z_step': 2.48},
+    0: {'image_name': '01_Chapter_Select_CS_map.webp', 'x': 1843.2, 'z': 409.6, 'step': 3.2},
+    1: {'image_name': '02_Broken_Bridge_BB_map.webp',  'x': 1843.2, 'z': 409.6, 'step': 3.2},
+    2: {'image_name': '03_Pink_Desert_PD_map.webp',    'x': 1843.2, 'z': 409.6, 'step': 3.2},
+    3: {'image_name': '04_Sunken_City_SC_map.webp',    'x': 1785,   'z': 521.8, 'step': 2.98},
+    4: {'image_name': '05_Underground_UG_map.webp',    'x': 1843.2, 'z': 253.1, 'step': 3.2},
+    5: {'image_name': '06_Tower_map.webp',             'x': 1843.2, 'z': 409.6, 'step': 3.2, 'y_minimap': 1148, 'z_minimap': -1320},
+    6: {'image_name': '07_Snow_map.webp',              'x': 1843.2, 'z': 409.6, 'step': 3.2},
+    7: {'image_name': '08_Paradise_map.webp',          'x': 1660,   'z': 775.9, 'step': 2.48},
 }
 
 class JourneyTrackerApp:
@@ -93,29 +93,27 @@ class JourneyTrackerApp:
             
             x_origin = LEVELS.get(self.current_level_id, {}).get('x', 1840)
             z_origin = LEVELS.get(self.current_level_id, {}).get('z', 410)
-            x_step = LEVELS.get(self.current_level_id, {}).get('x_step', 3.2)
-            z_step = LEVELS.get(self.current_level_id, {}).get('z_step', 3.2)
+            step = LEVELS.get(self.current_level_id, {}).get('step', 3.2)
             
             wayfarer_x, wayfarer_y, wayfarer_z = coordinates[0]
             nick_x, nick_y, nick_z = coordinates[1]
 
-            draw.ellipse((z_origin + wayfarer_z * z_step - PEN_SIZE, x_origin - wayfarer_x * x_step - PEN_SIZE,
-                          z_origin + wayfarer_z * z_step + PEN_SIZE, x_origin - wayfarer_x * x_step + PEN_SIZE), fill=WAYFARER_COLOR)
+            draw.ellipse((z_origin + wayfarer_z * step - PEN_SIZE, x_origin - wayfarer_x * step - PEN_SIZE,
+                          z_origin + wayfarer_z * step + PEN_SIZE, x_origin - wayfarer_x * step + PEN_SIZE), fill=WAYFARER_COLOR)
             
-            draw.ellipse((z_origin + nick_z * z_step - PEN_SIZE, x_origin - nick_x * x_step - PEN_SIZE,
-                          z_origin + nick_z * z_step + PEN_SIZE, x_origin - nick_x * x_step + PEN_SIZE), fill=NICK_COLOR)
+            draw.ellipse((z_origin + nick_z * step - PEN_SIZE, x_origin - nick_x * step - PEN_SIZE,
+                          z_origin + nick_z * step + PEN_SIZE, x_origin - nick_x * step + PEN_SIZE), fill=NICK_COLOR)
 
             if self.current_level_id == 5:
                 y_origin = LEVELS.get(self.current_level_id, {}).get('y_minimap', 1500)
                 z_origin = LEVELS.get(self.current_level_id, {}).get('z_minimap', 410)
-                y_step = LEVELS.get(self.current_level_id, {}).get('y_step_minimap', 3.2)
 
                 if in_boundaries(wayfarer_z):
-                    draw.ellipse((z_origin + wayfarer_z * z_step - PEN_SIZE, y_origin - wayfarer_y * y_step - PEN_SIZE,
-                                  z_origin + wayfarer_z * z_step + PEN_SIZE, y_origin - wayfarer_y * y_step + PEN_SIZE), fill=WAYFARER_COLOR)
+                    draw.ellipse((z_origin + wayfarer_z * step - PEN_SIZE, y_origin - wayfarer_y * step - PEN_SIZE,
+                                  z_origin + wayfarer_z * step + PEN_SIZE, y_origin - wayfarer_y * step + PEN_SIZE), fill=WAYFARER_COLOR)
                 if in_boundaries(nick_z):
-                    draw.ellipse((z_origin + nick_z * z_step - PEN_SIZE, y_origin - nick_y * y_step - PEN_SIZE,
-                                  z_origin + nick_z * z_step + PEN_SIZE, y_origin - nick_y * y_step + PEN_SIZE), fill=NICK_COLOR)
+                    draw.ellipse((z_origin + nick_z * step - PEN_SIZE, y_origin - nick_y * step - PEN_SIZE,
+                                  z_origin + nick_z * step + PEN_SIZE, y_origin - nick_y * step + PEN_SIZE), fill=NICK_COLOR)
 
 
             image_resized = ImageTk.PhotoImage(image_draw.resize((self.window_size[0], self.window_size[1]), Image.LANCZOS))
