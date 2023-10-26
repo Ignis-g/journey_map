@@ -14,10 +14,28 @@ LEVELS = {
     2: {'image_name': '03_Pink_Desert_PD_map.webp',    'x': 1843.2, 'z': 409.6, 'step': 3.2},
     3: {'image_name': '04_Sunken_City_SC_map.webp',    'x': 1785,   'z': 521.8, 'step': 2.98},
     4: {'image_name': '05_Underground_UG_map.webp',    'x': 1843.2, 'z': 253.1, 'step': 3.2},
-    5: {'image_name': '06_Tower_map.webp',             'x': 1843.2, 'z': 409.6, 'step': 3.2, 'y_minimap': 1148, 'z_minimap': -1320},
+    5: {'image_name': '06_Tower_map.webp',             'x': 1843.2, 'z': 409.6, 'step': 3.2, 'y_minimap': 1140, 'z_minimap': -1320},
     6: {'image_name': '07_Snow_map.webp',              'x': 1843.2, 'z': 409.6, 'step': 3.2},
     7: {'image_name': '08_Paradise_map.webp',          'x': 1660,   'z': 775.9, 'step': 2.48},
 }
+
+POSITION_POINTER_ADDR = 0x3C47B18
+
+WAYFARER_POINTER_OFFSETS = [
+    [0x60, 0x28, 0xD0, 0x100, 0x30, 0x370, 0xC0],
+    [0x70, 0x178, 0x78, 0xD0, 0x108, 0x3A8, 0xC4],
+    [0x70, 0x28, 0xD0, 0x108, 0x30, 0x370, 0xC8]
+]
+
+NICK_POINTER_OFFSETS = [
+    [0x60, 0x28, 0xD0, 0x108, 0x4A0, 0x10, 0x948],
+    [0x60, 0x28, 0xD0, 0x108, 0x4A0, 0x10, 0x94C],
+    [0x60, 0x28, 0xD0, 0x108, 0x4A0, 0x10, 0x950]
+]
+
+LEVEL_POINTER_ADDR = 0x3CFCA80
+
+LEVEL_POINTER_OFFSETS = [0x70, 0x28, 0xD0, 0x100, 0x30, 0x368, 0x30]
 
 class JourneyTrackerApp:
     def __init__(self):
@@ -30,10 +48,11 @@ class JourneyTrackerApp:
                 
         self.process = None
         self.image = None
-        self.current_level_id = -1
+        self.current_level_id = 0
 
         self.create_gui()
-        self.connect_to_process()
+        self.load_image()
+        self.updateProcess() 
         self.update()
 
     def create_gui(self):
@@ -42,18 +61,7 @@ class JourneyTrackerApp:
         self.img_label.pack(fill=tk.BOTH, expand=True)
         self.root.bind("<Configure>", self.resize_canvas)
 
-    def connect_to_process(self):
-        try:
-            self.rwm = ReadWriteMemory()
-            self.process = self.rwm.get_process_by_name('Journey.exe')
-            self.process.open()
-            self.base_address = self.process.get_base_address()
-            self.level_id_pointer = self.process.get_pointer(self.base_address + 0x3CFCA80, offsets=[0x70, 0x28, 0xD0, 0x100, 0x30, 0x368, 0x30])
-        except Exception as e:
-            print(f"Error connecting to process: {e}")
-            self.root.destroy()
-
-    def load_image(self, level_id):
+    def load_image(self):
         try:
             image = Image.open(LEVELS.get(self.current_level_id, {}).get('image_name', 'Unknown_map.webp'))
             image_resized = ImageTk.PhotoImage(image.resize((self.window_size[0], self.window_size[1]), Image.LANCZOS))
@@ -64,23 +72,15 @@ class JourneyTrackerApp:
             print(f"Error loading image: {e}")
 
     def load_dot_coordinates(self):
-        wayfarer_pointer_offsets = ([0x60, 0x28, 0xD0, 0x100, 0x30, 0x370, 0xC0], [0x70, 0x178, 0x78, 0xD0, 0x108, 0x3A8, 0xC4], [0x70, 0x28, 0xD0, 0x108, 0x30, 0x370, 0xC8])
-        nick_pointer_offsets = ([0x60, 0x28, 0xD0, 0x108, 0x4A0, 0x10, 0x948], [0x60, 0x28, 0xD0, 0x108, 0x4A0, 0x10, 0x94C], [0x60, 0x28, 0xD0, 0x108, 0x4A0, 0x10, 0x950])
-
-        def read_coordinates(pointer, offsets):
+        def read_coordinates(addresses):
             position = []
-            address = self.base_address + pointer
-
-            for offset in offsets:
-                current_address = self.process.get_pointer(address, offsets=offset)
-                position.append(unpack('<f', self.process.read(current_address).to_bytes(4, 'little'))[0])
+            
+            for address in addresses:
+                position.append(unpack('<f', self.process.read(address).to_bytes(4, 'little'))[0])
             
             return tuple(position)
 
-        wayfarer_position = read_coordinates(0x3C47B18, wayfarer_pointer_offsets)
-        nick_position = read_coordinates(0x3C47B18, nick_pointer_offsets)
-
-        return [wayfarer_position, nick_position]
+        return [read_coordinates(self.wayfarer_pos_addresses), read_coordinates(self.nick_pos_addresses)]
 
     def draw_dots(self):
         def in_boundaries(position):
@@ -128,14 +128,38 @@ class JourneyTrackerApp:
             self.window_size = (width, height)
 
     def update(self):
-        new_level_id = self.process.read(self.level_id_pointer)
-        if new_level_id != self.current_level_id:
-            self.current_level_id = new_level_id
-            self.load_image(self.current_level_id)
+        if self.process:
+            new_level_id = self.process.read(self.level_id_pointer)
+            if new_level_id != self.current_level_id:
+                self.current_level_id = new_level_id
+                self.load_image()
 
-        self.draw_dots()
+            self.draw_dots()
         self.root.after(250, self.update)
 
+    def updateProcess(self):
+        try:
+            new_process = ReadWriteMemory().get_process_by_name('Journey.exe')
+            if self.process != new_process:
+                if self.process != None:
+                    self.process.close()
+                self.process = new_process
+                self.process.open()
+                self.base_address = self.process.get_base_address()
+                self.level_id_pointer = self.process.get_pointer(self.base_address + LEVEL_POINTER_ADDR, offsets=LEVEL_POINTER_OFFSETS)
+
+                self.wayfarer_pos_addresses = []
+                for offset in WAYFARER_POINTER_OFFSETS:
+                    self.wayfarer_pos_addresses.append(self.process.get_pointer(self.base_address + POSITION_POINTER_ADDR, offsets=offset))
+
+                self.nick_pos_addresses = []
+                for offset in NICK_POINTER_OFFSETS:
+                    self.nick_pos_addresses.append(self.process.get_pointer(self.base_address + POSITION_POINTER_ADDR, offsets=offset))
+
+        except Exception as e:
+            print(f"Journey process not found.")
+        self.root.after(5000, self.updateProcess)
+        
     def run(self):
         self.root.mainloop()
 
