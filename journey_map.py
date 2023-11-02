@@ -8,8 +8,9 @@ WAYFARER_COLOR = 'cyan'
 NICK_COLOR = 'red'
 PEN_SIZE = 8
 
+# TODO: Finding the min and max on all maps. Eventually making arrows for the corners as well. 
 LEVELS = {
-    0: {'image_name': '01_Chapter_Select_CS_map.webp', 'x': 1843.2, 'z': 409.6, 'step': 3.2},
+    0: {'image_name': '01_Chapter_Select_CS_map.webp', 'x': 1843.2, 'x_min': -63, 'x_max': 575, 'z': 409.6, 'z_min': -125, 'z_max': 1151, 'step': 3.2},
     1: {'image_name': '02_Broken_Bridge_BB_map.webp',  'x': 1843.2, 'z': 409.6, 'step': 3.2},
     2: {'image_name': '03_Pink_Desert_PD_map.webp',    'x': 1843.2, 'z': 409.6, 'step': 3.2},
     3: {'image_name': '04_Sunken_City_SC_map.webp',    'x': 1785,   'z': 521.8, 'step': 2.98},
@@ -85,40 +86,54 @@ class JourneyTrackerApp:
     def draw_dots(self):
         def in_boundaries(position):
             return 470 < position < 850
+        
+        if self.image is None:
+            return
 
-        if self.image is not None:
-            image_draw = self.image.copy()
-            draw = ImageDraw.Draw(image_draw)
-            coordinates = self.load_dot_coordinates()
+        image_draw = self.image.copy()
+        draw = ImageDraw.Draw(image_draw)
+        coordinates = self.load_dot_coordinates()
+
+        level_data = LEVELS.get(self.current_level_id, {})
+        x_origin = level_data.get('x', 1843.2)
+        x_min, x_max = level_data.get('x_min', -63), level_data.get('x_max', 575)
+        z_origin = level_data.get('z', 409.6)
+        z_min, z_max = level_data.get('z_min', -125), level_data.get('z_max', 1151)
+        step = level_data.get('step', 3.2)
+
+        for (x, y, z), color in [(coordinates[0], WAYFARER_COLOR), (coordinates[1], NICK_COLOR)]:
+            if z < z_min:
+                draw.polygon([(z_origin + z_min * step, x_origin - x * step),
+                              (z_origin + z_min * step + PEN_SIZE * 2, x_origin - x * step - PEN_SIZE * 2),
+                              (z_origin + z_min * step + PEN_SIZE * 2, x_origin - x * step + PEN_SIZE * 2)], fill=color)
+            elif z > z_max:
+                draw.polygon([(z_origin + z_max * step, x_origin - x * step),
+                              (z_origin + z_max * step - PEN_SIZE * 2, x_origin - x * step - PEN_SIZE * 2),
+                              (z_origin + z_max * step - PEN_SIZE * 2, x_origin - x * step + PEN_SIZE * 2)], fill=color)
+            elif x < x_min:
+                draw.polygon([(z_origin + z * step, x_origin - x_min * step),
+                              (z_origin + z * step - PEN_SIZE * 2, x_origin - x_min * step - PEN_SIZE * 2),
+                              (z_origin + z * step + PEN_SIZE * 2, x_origin - x_min * step - PEN_SIZE * 2)], fill=color)
+            elif x > x_max:
+                draw.polygon([(z_origin + z * step, x_origin - x_max * step),
+                              (z_origin + z * step - PEN_SIZE * 2, x_origin - x_max * step + PEN_SIZE * 2),
+                              (z_origin + z * step + PEN_SIZE * 2, x_origin - x_max * step + PEN_SIZE * 2)], fill=color)
+            else:
+                draw.ellipse((z_origin + z * step - PEN_SIZE, x_origin - x * step - PEN_SIZE,
+                              z_origin + z * step + PEN_SIZE, x_origin - x * step + PEN_SIZE), fill=color)
+
+        if self.current_level_id == 5:
+            y_minimap = level_data.get('y_minimap', 1500)
+            z_minimap = level_data.get('z_minimap', 410)
             
-            x_origin = LEVELS.get(self.current_level_id, {}).get('x', 1840)
-            z_origin = LEVELS.get(self.current_level_id, {}).get('z', 410)
-            step = LEVELS.get(self.current_level_id, {}).get('step', 3.2)
-            
-            wayfarer_x, wayfarer_y, wayfarer_z = coordinates[0]
-            nick_x, nick_y, nick_z = coordinates[1]
+            for (x, y, z), color in [(coordinates[0], WAYFARER_COLOR), (coordinates[1], NICK_COLOR)]:
+                if in_boundaries(z):
+                    draw.ellipse((z_minimap + z * step - PEN_SIZE, y_minimap - y * step - PEN_SIZE,
+                                  z_minimap + z * step + PEN_SIZE, y_minimap - y * step + PEN_SIZE), fill=color)
 
-            draw.ellipse((z_origin + wayfarer_z * step - PEN_SIZE, x_origin - wayfarer_x * step - PEN_SIZE,
-                          z_origin + wayfarer_z * step + PEN_SIZE, x_origin - wayfarer_x * step + PEN_SIZE), fill=WAYFARER_COLOR)
-            
-            draw.ellipse((z_origin + nick_z * step - PEN_SIZE, x_origin - nick_x * step - PEN_SIZE,
-                          z_origin + nick_z * step + PEN_SIZE, x_origin - nick_x * step + PEN_SIZE), fill=NICK_COLOR)
-
-            if self.current_level_id == 5:
-                y_origin = LEVELS.get(self.current_level_id, {}).get('y_minimap', 1500)
-                z_origin = LEVELS.get(self.current_level_id, {}).get('z_minimap', 410)
-
-                if in_boundaries(wayfarer_z):
-                    draw.ellipse((z_origin + wayfarer_z * step - PEN_SIZE, y_origin - wayfarer_y * step - PEN_SIZE,
-                                  z_origin + wayfarer_z * step + PEN_SIZE, y_origin - wayfarer_y * step + PEN_SIZE), fill=WAYFARER_COLOR)
-                if in_boundaries(nick_z):
-                    draw.ellipse((z_origin + nick_z * step - PEN_SIZE, y_origin - nick_y * step - PEN_SIZE,
-                                  z_origin + nick_z * step + PEN_SIZE, y_origin - nick_y * step + PEN_SIZE), fill=NICK_COLOR)
-
-
-            image_resized = ImageTk.PhotoImage(image_draw.resize((self.window_size[0], self.window_size[1]), Image.LANCZOS))
-            self.img_label.config(image=image_resized)
-            self.img_label.image = image_resized
+        image_resized = ImageTk.PhotoImage(image_draw.resize((self.window_size[0], self.window_size[1]), Image.LANCZOS))
+        self.img_label.config(image=image_resized)
+        self.img_label.image = image_resized
 
     def resize_canvas(self, event):
         width = event.width
@@ -135,7 +150,7 @@ class JourneyTrackerApp:
                 self.load_image()
 
             self.draw_dots()
-        self.root.after(250, self.update)
+        self.root.after(100, self.update)
 
     def updateProcess(self):
         try:
