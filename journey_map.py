@@ -8,16 +8,15 @@ WAYFARER_COLOR = 'cyan'
 NICK_COLOR = 'red'
 PEN_SIZE = 8
 
-# TODO: Finding the min and max on all maps. Eventually making arrows for the corners as well. 
 LEVELS = {
-    0: {'image_name': '01_Chapter_Select_CS_map.webp', 'x': 1843.2, 'x_min': -63, 'x_max': 575, 'z': 409.6, 'z_min': -125, 'z_max': 1151, 'step': 3.2},
-    1: {'image_name': '02_Broken_Bridge_BB_map.webp',  'x': 1843.2, 'z': 409.6, 'step': 3.2},
-    2: {'image_name': '03_Pink_Desert_PD_map.webp',    'x': 1843.2, 'z': 409.6, 'step': 3.2},
-    3: {'image_name': '04_Sunken_City_SC_map.webp',    'x': 1785,   'z': 521.8, 'step': 2.98},
-    4: {'image_name': '05_Underground_UG_map.webp',    'x': 1843.2, 'z': 253.1, 'step': 3.2},
-    5: {'image_name': '06_Tower_map.webp',             'x': 1843.2, 'z': 409.6, 'step': 3.2, 'y_minimap': 1140, 'z_minimap': -1320},
-    6: {'image_name': '07_Snow_map.webp',              'x': 1843.2, 'z': 409.6, 'step': 3.2},
-    7: {'image_name': '08_Paradise_map.webp',          'x': 1660,   'z': 775.9, 'step': 2.48},
+    0: {'image_name': '01_Chapter_Select_CS_map.webp', 'x_origin': 1843.2, 'x_min': -63,  'x_max': 575, 'z_origin': 409.6, 'z_min': -127, 'z_max': 1151, 'step': 3.2},
+    1: {'image_name': '02_Broken_Bridge_BB_map.webp',  'x_origin': 1843.2, 'x_min': -63,  'x_max': 575, 'z_origin': 409.6, 'z_min': -127, 'z_max': 1151, 'step': 3.2},
+    2: {'image_name': '03_Pink_Desert_PD_map.webp',    'x_origin': 1843.2, 'x_min': -63,  'x_max': 575, 'z_origin': 409.6, 'z_min': -127, 'z_max': 1151, 'step': 3.2},
+    3: {'image_name': '04_Sunken_City_SC_map.webp',    'x_origin': 1785,   'x_min': -87,  'x_max': 598, 'z_origin': 521.8, 'z_min': -174, 'z_max': 1199, 'step': 2.98},
+    4: {'image_name': '05_Underground_UG_map.webp',    'x_origin': 1843.2, 'x_min': -63,  'x_max': 575, 'z_origin': 253.1, 'z_min': -78,  'z_max': 1200, 'step': 3.2},
+    5: {'image_name': '06_Tower_map.webp',             'x_origin': 1843.2, 'x_min': -63,  'x_max': 575, 'z_origin': 409.6, 'z_min': -127, 'z_max': 1151, 'step': 3.2, 'y_minimap': 1140, 'z_minimap': -1320},
+    6: {'image_name': '07_Snow_map.webp',              'x_origin': 1843.2, 'x_min': -63,  'x_max': 575, 'z_origin': 409.6, 'z_min': -127, 'z_max': 1151, 'step': 3.2},
+    7: {'image_name': '08_Paradise_map.webp',          'x_origin': 1660,   'x_min': -155, 'x_max': 668, 'z_origin': 775.9, 'z_min': -312, 'z_max': 1337, 'step': 2.48},
 }
 
 POSITION_POINTER_ADDR = 0x3C47B18
@@ -95,29 +94,54 @@ class JourneyTrackerApp:
         coordinates = self.load_dot_coordinates()
 
         level_data = LEVELS.get(self.current_level_id, {})
-        x_origin = level_data.get('x', 1843.2)
+        x_origin = level_data.get('x_origin', 1843.2)
         x_min, x_max = level_data.get('x_min', -63), level_data.get('x_max', 575)
-        z_origin = level_data.get('z', 409.6)
+        z_origin = level_data.get('z_origin', 409.6)
         z_min, z_max = level_data.get('z_min', -125), level_data.get('z_max', 1151)
         step = level_data.get('step', 3.2)
 
         for (x, y, z), color in [(coordinates[0], WAYFARER_COLOR), (coordinates[1], NICK_COLOR)]:
-            if z < z_min:
+            # Bottom left.
+            if z < z_min and x < x_min:
+                draw.polygon([(z_origin + z_min * step, x_origin - x_min * step),
+                              (z_origin + z_min * step, x_origin - x_min * step - PEN_SIZE * 2),
+                              (z_origin + z_min * step + PEN_SIZE * 2, x_origin - x_min * step)], fill=color) 
+            # Top left.
+            elif z < z_min and x > x_max:
+                draw.polygon([(z_origin + z_min * step, x_origin - x_max * step),
+                              (z_origin + z_min * step, x_origin - x_max * step + PEN_SIZE * 2),
+                              (z_origin + z_min * step + PEN_SIZE * 2, x_origin - x_max * step)], fill=color) 
+            # Bottom right.
+            elif z > z_max and x < x_min:
+                draw.polygon([(z_origin + z_max * step, x_origin - x_min * step),
+                              (z_origin + z_max * step - PEN_SIZE * 2, x_origin - x_min * step),
+                              (z_origin + z_max * step, x_origin - x_min * step - PEN_SIZE * 2)], fill=color) 
+            # Top right.
+            elif z > z_max and x > x_max:
+                draw.polygon([(z_origin + z_max * step, x_origin - x_max * step),
+                              (z_origin + z_max * step - PEN_SIZE * 2, x_origin - x_max * step),
+                              (z_origin + z_max * step, x_origin - x_max * step + PEN_SIZE * 2)], fill=color) 
+            # Left.
+            elif z < z_min:
                 draw.polygon([(z_origin + z_min * step, x_origin - x * step),
                               (z_origin + z_min * step + PEN_SIZE * 2, x_origin - x * step - PEN_SIZE * 2),
-                              (z_origin + z_min * step + PEN_SIZE * 2, x_origin - x * step + PEN_SIZE * 2)], fill=color)
+                              (z_origin + z_min * step + PEN_SIZE * 2, x_origin - x * step + PEN_SIZE * 2)], fill=color)           
+            # Right.
             elif z > z_max:
                 draw.polygon([(z_origin + z_max * step, x_origin - x * step),
                               (z_origin + z_max * step - PEN_SIZE * 2, x_origin - x * step - PEN_SIZE * 2),
                               (z_origin + z_max * step - PEN_SIZE * 2, x_origin - x * step + PEN_SIZE * 2)], fill=color)
+            # Bottom.
             elif x < x_min:
                 draw.polygon([(z_origin + z * step, x_origin - x_min * step),
                               (z_origin + z * step - PEN_SIZE * 2, x_origin - x_min * step - PEN_SIZE * 2),
                               (z_origin + z * step + PEN_SIZE * 2, x_origin - x_min * step - PEN_SIZE * 2)], fill=color)
+            # Top.
             elif x > x_max:
                 draw.polygon([(z_origin + z * step, x_origin - x_max * step),
                               (z_origin + z * step - PEN_SIZE * 2, x_origin - x_max * step + PEN_SIZE * 2),
                               (z_origin + z * step + PEN_SIZE * 2, x_origin - x_max * step + PEN_SIZE * 2)], fill=color)
+            # In the map bounds. 
             else:
                 draw.ellipse((z_origin + z * step - PEN_SIZE, x_origin - x * step - PEN_SIZE,
                               z_origin + z * step + PEN_SIZE, x_origin - x * step + PEN_SIZE), fill=color)
